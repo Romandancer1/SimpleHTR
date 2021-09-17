@@ -3,6 +3,7 @@ import random
 from collections import namedtuple
 from typing import Tuple
 
+import json
 import cv2
 import lmdb
 import numpy as np
@@ -36,30 +37,31 @@ class DataLoaderIAM:
         self.batch_size = batch_size
         self.samples = []
 
-        f = open(data_dir / 'gt/words.txt')
+        f = open(data_dir / 'ann/words.json')
+        data = json.load(f)
         chars = set()
         bad_samples_reference = ['a01-117-05-02', 'r06-022-03-05']  # known broken images in IAM dataset
-        for line in f:
+        for line in data:
             # ignore comment line
-            if not line or line[0] == '#':
-                continue
+            # if not line or line[0] == '#':
+            #     continue
+            #
+            # line_split = line.strip().split(' ')
+            # assert len(line_split) >= 9
+            #
+            # # filename: part1-part2-part3 --> part1/part1-part2/part1-part2-part3.png
+            # file_name_split = line_split[0].split('-')
+            # file_name_subdir1 = file_name_split[0]
+            # file_name_subdir2 = f'{file_name_split[0]}-{file_name_split[1]}'
+            file_base_name = line['file_name'] + '.png'
+            file_name = data_dir / 'img' / file_base_name
 
-            line_split = line.strip().split(' ')
-            assert len(line_split) >= 9
-
-            # filename: part1-part2-part3 --> part1/part1-part2/part1-part2-part3.png
-            file_name_split = line_split[0].split('-')
-            file_name_subdir1 = file_name_split[0]
-            file_name_subdir2 = f'{file_name_split[0]}-{file_name_split[1]}'
-            file_base_name = line_split[0] + '.png'
-            file_name = data_dir / 'img' / file_name_subdir1 / file_name_subdir2 / file_base_name
-
-            if line_split[0] in bad_samples_reference:
-                print('Ignoring known broken image:', file_name)
-                continue
+            # if line_split[0] in bad_samples_reference:
+            #     print('Ignoring known broken image:', file_name)
+            #     continue
 
             # GT text are columns starting at 9
-            gt_text = ' '.join(line_split[8:])
+            gt_text = line['text']
             chars = chars.union(set(list(gt_text)))
 
             # put sample into list
