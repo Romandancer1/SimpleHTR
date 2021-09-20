@@ -37,7 +37,7 @@ class DataLoaderIAM:
         self.batch_size = batch_size
         self.samples = []
 
-        f = open(data_dir / 'ann/words.json')
+        f = open(data_dir / 'json/words.json')
         data = json.load(f)
         chars = set()
         bad_samples_reference = ['a01-117-05-02', 'r06-022-03-05']  # known broken images in IAM dataset
@@ -53,7 +53,7 @@ class DataLoaderIAM:
             # file_name_split = line_split[0].split('-')
             # file_name_subdir1 = file_name_split[0]
             # file_name_subdir2 = f'{file_name_split[0]}-{file_name_split[1]}'
-            file_base_name = line['file_name'] + '.png'
+            file_base_name = line['file_name'] + '.jpg'
             file_name = data_dir / 'img' / file_base_name
 
             # if line_split[0] in bad_samples_reference:
